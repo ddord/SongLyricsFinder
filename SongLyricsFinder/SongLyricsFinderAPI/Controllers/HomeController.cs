@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using SongLyricsFinderAPI.Common;
 
 namespace SongLyricsFinderAPI.Controllers
 {
@@ -27,6 +28,7 @@ namespace SongLyricsFinderAPI.Controllers
 
         public IActionResult Index()
         {
+            CloudHelper.GetRDSConnectionString();
             return View();
         }
 

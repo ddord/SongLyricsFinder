@@ -1,11 +1,14 @@
+using DataAccess.EFCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SongLyricsFinderAPI.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +28,12 @@ namespace SongLyricsFinderAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            EncryptionHelper helper = new EncryptionHelper();
             services.AddControllersWithViews();
+            services.AddDbContext<ApplicationContext>(o =>
+            o.UseSqlServer(
+                helper.Decrypt(Configuration.GetConnectionString("Main")),
+                b => b.MigrationsAssembly(typeof(ApplicationContext).Assembly.FullName)));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
