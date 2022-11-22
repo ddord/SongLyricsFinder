@@ -1,0 +1,171 @@
+﻿@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Movie List";
+}
+@section Scripts {
+<script>
+        var CurrentRating;
+        var CurrentGenre;
+        var CurrentTitle;
+
+        function fnDocumentReadyCommon() {
+            search();
+        }
+
+        function search() {
+            CurrentRating = $('#selectRating').val();
+            CurrentGenre = $('#selectGenre').val();
+            CurrentTitle = $('#txtTitle').val();
+
+            selectMovieList(1, true);
+        }
+
+        function selectMovieList() {
+            var param = {
+                rating: CurrentRating,
+                genre: CurrentGenre,
+                title: CurrentTitle
+            }
+
+            m_Ajax.Call('@Url.Action("SelectMovieList")', param, function (data) {
+                if (data) {
+                    var tbodyHtml = "";
+                    $(data).each(function (i) {
+                        tbodyHtml += '<tr>';
+                        tbodyHtml += '  <td>';
+                        tbodyHtml += '      <a onclick="callEdit(this);">' + (data[i].title ? data[i].title : "") + '</a>';
+                        tbodyHtml += '  </td>';
+                        tbodyHtml += '  <td class="align-center">' + (data[i].genre ? data[i].genre : "") + '</td>';
+                        tbodyHtml += '  <td class="align-center">' + (data[i].director ? data[i].director : "") + '</td>';
+                        tbodyHtml += '  <td class="align-center">' + (data[i].releaseTime ? data[i].releaseTime : "") + '</td>';
+                        tbodyHtml += '  <td class="align-center">' + (data[i].rating ? data[i].rating : "") + '</td>';
+                        tbodyHtml += '  <td class="align-center">' + (data[i].updateUser ? data[i].updateUser : "") + '</td>';
+                        tbodyHtml += '</tr>';
+                    });
+                    $('#movieList').html(tbodyHtml);
+
+                } else {
+                    $('#movieList').html('<td colspan="6">The item does not exist.</td>');
+                }
+            });
+        }
+
+        function callAdd() {
+            m_Popup.Open("/Home/MovieItemRegistration", "Movie Content", 1000, 790);
+        }
+
+        function callEdit(elem) {
+            var title = $(elem).text();
+            m_Popup.Open("/Home/MovieItemModification?title=" + title, "Movie Content", 1000, 790);
+        }
+</script>
+}
+<div class="sub-content-padding">
+    <div class="subpage-header">
+        <h3 class="ft-darkblue">Movie List</h3>
+    </div>
+
+    <div class="subpage-body">
+        <div class="box-blue">
+            <ul class="search-wrap">
+                <li>
+                    <div class="form-label">
+                        <div class="control">
+                            <select id="selectRating" class="fm-def" style="width:120px;">
+                                <option value="11">All</option>
+                                <option value="10">10</option>
+                                <option value="9">9</option>
+                                <option value="8">8</option>
+                                <option value="7">7</option>
+                                <option value="6">6</option>
+                                <option value="5">5</option>
+                                <option value="4">4</option>
+                                <option value="3">3</option>
+                                <option value="2">2</option>
+                                <option value="1">1</option>
+                                <option value="0">0</option>
+                            </select>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-label">
+                        <div class="control">
+                            <select id="selectGenre" class="fm-def" style="width:120px;">
+                                <option value="All">All</option>
+                                <option value="Action">Action</option>
+                                <option value="Animation">Animation</option>
+                                <option value="Comedy">Comedy</option>
+                                <option value="Crime">Crime</option>
+                                <option value="Drama">Drama</option>
+                                <option value="Experimental">Experimental</option>
+                                <option value="Fantasy">Fantasy</option>
+                                <option value="Historical">Historical</option>
+                                <option value="Horror">Horror</option>
+                                <option value="Romance">Romance</option>
+                                <option value="Science Fiction">Science Fiction</option>
+                                <option value="Thriller">Thriller</option>
+                                <option value="Western">Western</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-label">
+                        <div class="control">
+                            <div class="date-wrap">
+                                <div class="date-input">
+                                    <input type="text" class="fm-def" id="txtTitle" placeholder="제목" value="" style="width:120px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div class="space-m"></div>
+            <div class="align-right">
+                <button class="btn sub-btn btn-basic-outline" onclick="search();"><i class="icon-fux-search m-r-xs"></i>Select</button>
+            </div>
+        </div>
+
+        <div class="space-l"></div>
+
+        <div class="dp-flex">
+            <div class="mr-auto">
+                <h5 class="ft-blue b">Movie List</h5>
+            </div>
+            <div class="ml-auto">
+                <button class="btn sub-btn btn-basic-outline" onclick="callAdd();">New</button>
+            </div>
+        </div>
+
+        <div class="space-s"></div>
+
+        <div class="grd-wrap overflow-auto">
+            <table width="100%" class="grd">
+                <colgroup>
+                    <col />
+                    <col width="10%" />
+                    <col width="10%" />
+                    <col width="20%" />
+                    <col width="10%" />
+                    <col width="10%" />
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th class="align-center">Title</th>
+                        <th class="align-center">Genre</th>
+                        <th class="align-center">Director</th>
+                        <th class="align-center">Release Time</th>
+                        <th class="align-center">Rating</th>
+                        <th class="align-center">Author</th>
+                    </tr>
+                </thead>
+                <tbody id="movieList"></tbody>
+            </table>
+        </div>
+
+        <div class="space-m"></div>
+    </div>
+</div>
