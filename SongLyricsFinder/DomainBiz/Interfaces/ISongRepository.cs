@@ -9,7 +9,9 @@ namespace DomainBiz.Interfaces
     public interface ISongRepository : IGenericRepository<SongInfo>
     {
         Task<IEnumerable<SongInfo>> GetSongInfoAsync();
+        Task<SongInfo> GetSongInfoAsync(int songId);
         Task<bool> SongInfoExistsAsync(int songId);
         Task CreateSongInfoAsync(SongInfo songInfo);
+        void DeleteSongInfoAsync(SongInfo songInfo);
     }
 }

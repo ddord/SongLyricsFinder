@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace SongLyricsFinderAPI.Controllers
 {
-    public class AlbumController : Controller
+    public class SongController : Controller
     {
         private ISongRepository _songRepository;
         private readonly IMapper _mapper;
 
-        public AlbumController(ISongRepository songRepository, IMapper mapper)
+        public SongController(ISongRepository songRepository, IMapper mapper)
         {
             _songRepository = songRepository;
             _mapper = mapper;
@@ -42,9 +42,87 @@ namespace SongLyricsFinderAPI.Controllers
             {
                 var finalSongInfo = _mapper.Map<SongInfo>(songInfo);
                 await _songRepository.CreateSongInfoAsync(finalSongInfo);
-                if (await _songRepository.SaveAsync())
+                if (!await _songRepository.SaveAsync())
                 {
-                    return StatusCode(500, true);
+                    return StatusCode(500, false);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+
+            return NoContent();
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateSongInfoAsync(int songId, [FromBody] SongInfo songInfo)
+        {
+            if (songInfo == null) return BadRequest();
+
+            try
+            {
+                SongInfo oldSongInfo = await _songRepository.GetSongInfoAsync(songId);
+
+                if (oldSongInfo == null) return NotFound();
+
+                _mapper.Map(songInfo, oldSongInfo);
+
+                if (!await _songRepository.SaveAsync())
+                {
+                    return StatusCode(500, false);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> DeleteSongInfoAsync(int songId)
+        {
+            if (!await _songRepository.SongInfoExistsAsync(songId)) return NotFound();
+
+            try
+            {
+                SongInfo oldSongInfo = await _songRepository.GetSongInfoAsync(songId);
+                
+                if (oldSongInfo == null) return NotFound();
+
+                _songRepository.DeleteSongInfoAsync(oldSongInfo);
+
+                if (!await _songRepository.SaveAsync())
+                {
+                    return StatusCode(500, false);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+
+            return NoContent();
+        }
+
+        [HttpPatch]
+        public async Task<ActionResult> PartiallyUpdateSongInfoAsync(int songId, [FromBody] SongInfo songInfo)
+        {
+            if (songInfo == null) return BadRequest();
+
+            try
+            {
+                SongInfo oldSongInfo = await _songRepository.GetSongInfoAsync(songId);
+
+                if (oldSongInfo == null) return NotFound();
+
+                _mapper.Map(songInfo, oldSongInfo);
+
+                if (!await _songRepository.SaveAsync())
+                {
+                    return StatusCode(500, false);
                 }
             }
             catch (Exception ex)

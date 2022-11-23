@@ -38,5 +38,11 @@ namespace DataAccess.EFCore.Repositories
         {
             await _context.AddAsync(songInfo);
         }
+
+        public void DeleteSongInfoAsync(SongInfo songInfo)
+        {
+            _context.Remove(songInfo);
+        }
+
     }
 }
