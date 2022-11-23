@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SongLyricsFinderAPI.Models
 {
-    public class AlbumInfo
+    public class SongInfo
     {
     }
 }

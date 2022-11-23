@@ -1,4 +1,6 @@
 using DataAccess.EFCore;
+using DataAccess.EFCore.Repositories;
+using DomainBiz.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -34,6 +36,13 @@ namespace SongLyricsFinderAPI
             o.UseSqlServer(
                 helper.Decrypt(Configuration.GetConnectionString("Main")),
                 b => b.MigrationsAssembly(typeof(ApplicationContext).Assembly.FullName)));
+
+            #region Repositories
+            services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddTransient<ISongRepository, SongRepository>();
+            services.AddTransient<ILyricsRepository, LyricsRepository>();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

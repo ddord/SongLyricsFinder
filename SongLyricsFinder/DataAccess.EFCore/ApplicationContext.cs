@@ -11,12 +11,23 @@ namespace DataAccess.EFCore
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<LyricsInfo>().HasKey(table => new {
-                table.SongId,
-                table.LyricsId
+            builder.Entity<SongInfo>(b =>
+            {
+                b.HasKey(e => e.SongId);
+                b.Property(e => e.SongId).ValueGeneratedOnAdd();
+            });
+
+            builder.Entity<LyricsInfo>(b =>
+            {
+                b.HasKey(e => new
+                {
+                    e.SongId,
+                    e.LyricsId
+                });
+                b.Property(e => e.LyricsId).ValueGeneratedOnAdd();
             });
         }
-        public DbSet<AlbumInfo> AlbumInfos { get; set; }
+        public DbSet<SongInfo> SongInfos { get; set; }
         public DbSet<LyricsInfo> LyricsInfos { get; set; }
     }
 }
