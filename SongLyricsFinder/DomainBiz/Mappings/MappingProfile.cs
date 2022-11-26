@@ -11,8 +11,8 @@ namespace DomainBiz.Mappings
     {
         public MappingProfile()
         {
-            CreateMap<LyricsInfo, LyricsInfoDto>();
-            CreateMap<SongInfo, SongInfoDto>();
+            CreateMap<LyricsInfoDto, LyricsInfo>();
+            CreateMap<SongInfoDto, SongInfo>();
         }
         
     }

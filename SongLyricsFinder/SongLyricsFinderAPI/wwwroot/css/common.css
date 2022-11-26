@@ -2423,14 +2423,15 @@ tr.total th, tr.total td {
 
 .fm-def {
     display: inline-block;
-    padding: 2px .3rem 4px .6rem;
-    font-weight: 400;
+    padding: .5rem;
+    font-weight: 600;
     line-height: normal;
     border: 1px solid #ddd;
     vertical-align: middle;
     border-radius: 3px;
     -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
-    font-size: 0.85rem;
+    font-size: 1.2rem;
+    border-radius:20px;
 }
 
 .fm-def-view {

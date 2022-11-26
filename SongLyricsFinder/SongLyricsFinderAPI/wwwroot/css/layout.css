@@ -4,7 +4,7 @@
 
 /* layout */
 #common-wrapper {height:100%;} /* 화면(wrapper) 및 팝업(fux-popup)을 감싸는 용도 */
-#wrapper {margin:auto; min-width:1200px; width:100%; height: 100%; display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; align-content: stretch;}
+#wrapper {margin:auto; min-width:1200px; width:80%; height: 100%; display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; align-content: stretch;}
 #outer-wrap {display: flex; flex-direction: row; justify-content: flex-start; align-items: stretch; align-content: stretch; min-height:100%; position: relative;}
 #header {position: fixed; top:0; right:0; left:0; width:100%; z-index:9999; background:#fff; border-bottom: 1px solid #e8eaee;}
     
@@ -24,7 +24,7 @@
 }
 
 /* header */
-.header-container { width:100%; display:inline-flex; display: -ms-flexbox; display: -webkit-flex; flex-direction: row; align-items: center; height:100%; padding-right:10px;}
+.header-container { width:100%; display:inline-flex; display: -ms-flexbox; display: -webkit-flex; flex-direction: row; align-items: center; /*height:100%;*/ padding-right:10px;}
 .header-container .service-name {float:right; height:60px; line-height:55px;}
 .header-item { flex:inherit; flex-basis: inherit; /*flex-grow: 1;*/  width:fit-content; height:100%; white-space: nowrap;}
 .header-item.align-center {text-align:left !important;}
@@ -56,7 +56,7 @@
 /* innder-wrap */
 #inner-wrap {flex: 1;}
 #inner-wrap.full-content {} /* index */
-#inner-wrap.sub-content {width:calc(100% - 230px); margin-left:230px;} /* 서브페이지 */
+#inner-wrap.sub-content {width:calc(100% - 230px);/* margin-left:230px;*/} /* 서브페이지 */
 
 /* subpage - optional(1) */
 .sub-content-h-full {display: flex; flex-direction: column;}
@@ -206,5 +206,17 @@
 
 .fuxFrame {height: calc(100vh - 60px); width:100%; border:none;}
 
-/* (삭제예정) */
-#UxTestFrame {height: 100vh;}
+.sub-content-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: 10px;
+    column-gap: 20px;
+}
+
+.block {
+    display: block;
+}
+
+.text-align-center {
+    text-align: center;
+}

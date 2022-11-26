@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DomainBiz.DTO;
 using DomainBiz.Entites;
 using DomainBiz.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -33,6 +34,15 @@ namespace SongLyricsFinderAPI.Controllers
             return Ok(result);
         }
 
+        [Route("Song/GetSongInfo/{songId}")]
+        [HttpGet]
+        public async Task<ActionResult<LyricsInfo>> GetLyricsInfoAsync(int lyricsId)
+        {
+            var lyricsInfo = await _lyricsRepository.GetLyricsInfoAsync(lyricsId);
+            var result = _mapper.Map<LyricsInfo>(lyricsInfo);
+            return Ok(result);
+        }
+
         [HttpPost]
         public async Task<ActionResult> CreateLyricsInfoAsync([FromBody] LyricsInfo lyricsInfo)
         {
@@ -46,23 +56,25 @@ namespace SongLyricsFinderAPI.Controllers
                 {
                     return StatusCode(500, false);
                 }
+                else
+                {
+                    return Ok();
+                }
             }
             catch (Exception ex)
             {
                 return BadRequest();
             }
-
-            return NoContent();
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateLyricsInfoAsync(int lyricsId, [FromBody] LyricsInfo lyricsInfo)
+        public async Task<ActionResult> UpdateLyricsInfoAsync([FromBody] LyricsInfoDto lyricsInfo)
         {
             if (lyricsInfo == null) return BadRequest();
 
             try
             {
-                LyricsInfo oldLyricsInfo = await _lyricsRepository.GetLyricsInfoAsync(lyricsId);
+                LyricsInfo oldLyricsInfo = await _lyricsRepository.GetLyricsInfoAsync(lyricsInfo.LyricsId);
 
                 if (oldLyricsInfo == null) return NotFound();
 
@@ -72,15 +84,18 @@ namespace SongLyricsFinderAPI.Controllers
                 {
                     return StatusCode(500, false);
                 }
+                else
+                {
+                    return Ok();
+                }
             }
             catch (Exception ex)
             {
                 return BadRequest();
             }
-
-            return NoContent();
         }
 
+        [Route("Lyrics/DeleteLyricsInfo/{lyricsId}")]
         [HttpDelete]
         public async Task<ActionResult> DeleteLyricsInfoAsync(int lyricsId)
         {
@@ -98,23 +113,25 @@ namespace SongLyricsFinderAPI.Controllers
                 {
                     return StatusCode(500, false);
                 }
+                else
+                {
+                    return Ok();
+                }
             }
             catch (Exception ex)
             {
                 return BadRequest();
             }
-
-            return NoContent();
         }
 
         [HttpPatch]
-        public async Task<ActionResult> PartiallyUpdateSongInfoAsync(int lyricsId, [FromBody] LyricsInfo lyricsInfo)
+        public async Task<ActionResult> PartiallyUpdateSongInfoAsync([FromBody] LyricsInfoDto lyricsInfo)
         {
             if (lyricsInfo == null) return BadRequest();
 
             try
             {
-                LyricsInfo oldLyricsInfo = await _lyricsRepository.GetLyricsInfoAsync(lyricsId);
+                LyricsInfo oldLyricsInfo = await _lyricsRepository.GetLyricsInfoAsync(lyricsInfo.LyricsId);
 
                 if (oldLyricsInfo == null) return NotFound();
 
@@ -124,13 +141,15 @@ namespace SongLyricsFinderAPI.Controllers
                 {
                     return StatusCode(500, false);
                 }
+                else
+                {
+                    return Ok();
+                }
             }
             catch (Exception ex)
             {
                 return BadRequest();
             }
-
-            return NoContent();
         }
     }
 }
