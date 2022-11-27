@@ -1,0 +1,287 @@
+﻿@{
+    Layout = "_PopLayout";
+    ViewData["Title"] = "Item Content";
+}
+@section Scripts {
+    <script>
+        var currentStatus = "@ViewBag.Status";
+        var currentId = "@ViewBag.CurrentId";
+
+
+        function fnDocumentReadyCommon() {
+            if (currentStatus.toUpperCase() == "U") {
+                selectItem();
+                $("#btnAdd").hide();
+                $("#btnUpdate").show();
+                $("#btnDelete").show();
+            } else {
+                $("#btnAdd").show();
+                $("#btnUpdate").hide();
+                $("#btnDelete").hide();
+            }
+        }
+
+        function selectItem() {
+            m_Ajax.Call('/Song/GetSongInfo/' + currentId, '', function (data) {
+                if (data) {
+                    $('#txtSongId').val(data.songId),
+                    $('#txtSongName').val(data.songname);
+                    $('#txtGenre').val(data.genre);
+                    $('#txtArtist').val(data.artist);
+                    $('#txtLyricist').val(data.lyricist);
+                    $('#txtComposer').val(data.composer);
+                    $('#txtUpdateUser').val(data.updateUser);
+                }
+            }, "GET");
+        }
+
+        function insertItem() {
+            if (!m_Required.Check()) {
+                return;
+            }
+
+            if ($("#txtSongName").val().trim() == "") {
+                alert("Please enter the song name.");
+                return;
+            }
+
+            var insertParam = {
+                songName: $('#txtSongName').val().trim(),
+                genre: $('#txtGenre').val(),
+                artist: $('#txtArtist').val().trim(),
+                lyricist: $('#txtLyricist').val().trim(),
+                composer: $('#txtComposer').val().trim(),
+                updateUser: $('#txtUpdateUser').val().trim()
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '/Song/CreateSongInfo',
+                data: JSON.stringify(insertParam),
+                dataType: "json",
+                async: true,
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    opener.search();
+                    if (data == true) {
+                        alert('Save');
+                        m_Popup.Close();
+                    } else {
+                        alert("Error: Please check for data");
+                    }
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+
+            //m_Ajax.Call('/Song/CreateSongInfo', JSON.stringify(insertParam), function (data) {
+            //    opener.fnDocumentReadyCommon();
+            //    if (data > 0) {
+            //        alert('Save');
+            //        m_Popup.Close();
+            //    } else {
+            //        alert("Error: Please check for data");
+            //    }
+            //}, "POST");
+        }
+
+        function updateItem() {
+            if (!m_Required.Check()) {
+                return;
+            }
+
+            if ($("#txtSongName").val().trim() == "") {
+                alert("Please enter the song name.");
+                return;
+            }
+
+            var songInfo = new FormData();
+            songInfo.append("SongId", $("#txtSongId").val());
+            songInfo.append("SongName", $("#txtSongName").val());
+            songInfo.append("Genre", $("#txtGenre").val());
+            songInfo.append("Artist", $("#txtArtist").val());
+            songInfo.append("Lyricist", $("#txtLyricist").val());
+            songInfo.append("Composer", $("#txtComposer").val());
+            songInfo.append("UpdateUser", $("#txtUpdateUser").val());
+
+
+            //var songInfo = {
+            //    songId: $('#txtSongId').val().trim(),
+            //    songName: $('#txtSongName').val().trim(),
+            //    genre: $('#txtGenre').val(),
+            //    artist: $('#txtArtist').val().trim(),
+            //    lyricist: $('#txtLyricist').val().trim(),
+            //    composer: $('#txtComposer').val().trim(),
+            //    updateUser: $('#txtUpdateUser').val().trim()
+            //}
+
+            $.ajax({
+                type: 'PUT',
+                url: '/Song/UpdateSongInfo/' + $("#txtSongId").val(),
+                data: songInfo,
+                processData: false,
+                contentType: false,
+                //dataType: "json",
+                //async: true,
+                //contentType: 'application/json; charset=utf-8',
+                success: function(data) {
+                    if (data == true) {
+                        alert("Save.");
+                        opener.search();
+                        m_Popup.Close();
+                    } else {
+                        alert("Error: Please check for data");
+                    }
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+
+        function deleteItem() {
+            if (!m_Required.Check()) {
+                return;
+            }
+
+            if ($("#txtSongId").val().trim() == "") {
+                alert("Please enter the song ID.");
+                return;
+            }
+
+            var url = '/Song/DeleteSongInfo/' + $('#txtSongId').val().trim();
+            $.ajax({
+                type: 'DELETE',
+                url: url,
+                //dataType: "json",
+                //async: true,
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data == true) {
+                        alert("Delete.");
+                        opener.search();
+                        m_Popup.Close();
+                    } else {
+                        alert("Error: Please check for data");
+                    }
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+
+        function updatePartialItem() {
+            if (!m_Required.Check()) {
+                return;
+            }
+
+            if ($("#txtSongName").val().trim() == "") {
+                alert("Please enter the song name.");
+                return;
+            }
+
+            var songInfo = new FormData();
+            songInfo.append("SongId", $("#txtSongId").val());
+            songInfo.append("SongName", $("#txtSongName").val());
+            songInfo.append("Genre", $("#txtGenre").val());
+            songInfo.append("Artist", $("#txtArtist").val());
+            songInfo.append("Lyricist", $("#txtLyricist").val());
+            songInfo.append("Composer", $("#txtComposer").val());
+            songInfo.append("UpdateUser", $("#txtUpdateUser").val());
+
+            $.ajax({
+                type: 'PATCH',
+                url: '/Song/UpdateSongInfo/' + $("#txtSongId").val(),
+                data: songInfo,
+                processData: false,
+                contentType: false,
+                //dataType: "json",
+                //async: true,
+                //contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data == true) {
+                        alert("Save.");
+                        opener.fnDocumentReadyCommon();
+                        m_Popup.Close();
+                    } else {
+                        alert("Error: Please check for data");
+                    }
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+
+    </script>
+}
+<div>
+    <div class="pop-header dp-flex mr-auto">
+        <h6 class="title">@ViewData["Title"]</h6>
+    </div>
+
+    <div class="pop-content">
+        <div class="pop-size optional-pop-padding">
+
+            <div class="space-s"></div>
+
+            <div class="tab-content flex-1 overflow-auto-y p-t-l">
+                <table width="100%" class="tbl-basic">
+                    <colgroup>
+                        <col width="12%" />
+                        <col width="38%" />
+                        <col width="12%" />
+                        <col width="38%" />
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th>Song Name</th>
+                            <td>
+                                <input id="txtSongId" type="hidden" class="fm-def" readonly />
+                                <input id="txtSongName" type="text" class="fm-def" style="width: 200px;" m_required="SongName" />
+                            </td>
+                            <th>Genre</th>
+                            <td>
+                                <input id="txtGenre" type="text" class="fm-def" style="width: 200px;" m_required="Genre" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Artist</th>
+                            <td>
+                                <input id="txtArtist" type="text" class="fm-def" style="width: 200px;" m_required="Artist" />
+                            </td>
+                            <th>Lyricist</th>
+                            <td>
+                                <input id="txtLyricist" type="text" class="fm-def" style="width: 200px;" m_required="Lyricist" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Composer</th>
+                            <td>
+                                <input id="txtComposer" type="text" class="fm-def" style="width: 200px;" m_required="Composer" />
+                            </td>
+                            <th>Update User</th>
+                            <td>
+                                <input id="txtUpdateUser" type="text" class="fm-def" style="width: 200px;" m_required="UpdateUser" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="pop-footer">
+            <div class="dp-flex">
+                <div class="ml-auto">
+                    <button id="btnAdd" class="btn page-btn btn-basic" style="display:none;" onclick="insertItem();">Add</button>
+                    <button id="btnUpdate" class="btn page-btn btn-basic" style="display:none;" onclick="updateItem();">Update</button>
+                    <button id="btnDelete" class="btn page-btn btn-basic" style="display:none;" onclick="deleteItem();">Delete</button>
+                    <button class="btn page-btn btn-basic" onclick="m_Popup.Close();">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

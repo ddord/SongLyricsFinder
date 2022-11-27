@@ -29,6 +29,14 @@ namespace DataAccess.EFCore.Repositories
             return await result.FirstOrDefaultAsync();
         }
 
+        public async Task<LyricsInfo> GetLyricsInfo2Async(int songId)
+        {
+            IQueryable<LyricsInfo> result;
+
+            result = _context.LyricsInfos.Where(c => c.SongId == songId);
+            return await result.FirstOrDefaultAsync();
+        }
+
         public async Task<bool> LyricsInfoExistsAsync(int lyricsId)
         {
             return await _context.LyricsInfos.AnyAsync<LyricsInfo>(c => c.LyricsId == lyricsId);

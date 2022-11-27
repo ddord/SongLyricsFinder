@@ -1,0 +1,236 @@
+﻿@{
+    Layout = "_PopLayout";
+    ViewData["Title"] = "Item Content";
+}
+@section Scripts {
+    <script>
+        var currentId = "@ViewBag.CurrentId";
+
+        function fnDocumentReadyCommon() {
+            selectItem();
+        }
+
+        function selectItem() {
+            m_Ajax.Call('/Lyrics/GetLyricsInfo/' + currentId, '', function (data) {
+                if (data) {
+                    $('#txtLyricsId').val(data.lyricsId);
+                    $('#txtLyrics').val(data.lyrics);
+                    $("#btnAdd").hide();
+                    $("#btnUpdate").show();
+                    $("#btnDelete").show();
+                } else {
+                    $("#btnAdd").show();
+                    $("#btnUpdate").hide();
+                    $("#btnDelete").hide();
+                }
+            }, "GET");
+        }
+
+        function insertItem() {
+            if (!m_Required.Check()) {
+                return;
+            }
+
+            if ($("#txtLyrics").val().trim() == "") {
+                alert("Please enter the lyrics.");
+                return;
+            }
+
+            var insertParam = {
+                songId: parseInt(currentId),
+                lyrics: $('#txtLyrics').val().trim()
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '/Lyrics/CreateLyricsInfo',
+                data: JSON.stringify(insertParam),
+                dataType: "json",
+                async: true,
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data == true) {
+                        alert('Save');
+                        opener.search();
+                        m_Popup.Close();
+                    } else {
+                        alert("Error: Please check for data");
+                    }
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+
+             //m_Ajax.Call('@Url.Action("CreateLyricsInfo")', insertParam, function (data) {
+             //    opener.fnDocumentReadyCommon();
+             //    if (data > 0) {
+             //        alert('Save');
+             //        m_Popup.Close();
+             //    } else {
+             //        alert("Error: Please check for data");
+             //    }
+             //}, "POST");
+        }
+
+        function updateItem() {
+            if (!m_Required.Check()) {
+                return;
+            }
+
+            if ($("#txtLyrics").val().trim() == "") {
+                alert("Please enter the lyrics.");
+                return;
+            }
+
+            var updateParam = new FormData();
+            updateParam.append("SongId", currentId);
+            updateParam.append("LyricsId", $("#txtLyricsId").val());
+            updateParam.append("Lyrics", $("#txtLyrics").val());
+
+            //var updateParam = {
+            //    currentId: currentId,
+            //    lyricsId: $('#txtLyricsId').val().trim(),
+            //    lyrics: $('#txtLyrics').val().trim()
+            //}
+
+            $.ajax({
+                type: 'PUT',
+                url: '/Lyrics/UpdateLyricsInfo/' + $("#txtLyricsId").val(),
+                data: updateParam,
+                processData: false,
+                contentType: false,
+                //dataType: "json",
+                //async: true,
+                //contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data > 0) {
+                        alert("Save.");
+                        opener.search();
+                        m_Popup.Close();
+                    } else {
+                        alert("Error: Please check for data");
+                    }
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+
+        function deleteItem() {
+            if (!m_Required.Check()) {
+                return;
+            }
+
+            if ($("#txtLyricsId").val().trim() == "") {
+                alert("Please enter the lyrics ID.");
+                return;
+            }
+
+            var url = '/Lyrics/DeleteLyricsInfo/' + $('#txtLyricsId').val().trim();
+            $.ajax({
+                type: 'DELETE',
+                url: url,
+                //dataType: "json",
+                //async: true,
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data > 0) {
+                        alert("Delete.");
+                        opener.search();
+                        m_Popup.Close();
+                    } else {
+                        alert("Error: Please check for data");
+                    }
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+
+        function updatePartialItem() {
+            if (!m_Required.Check()) {
+                return;
+            }
+
+            if ($("#txtLyrics").val().trim() == "") {
+                alert("Please enter the lyrics.");
+                return;
+            }
+
+            var updateParam = new FormData();
+            updateParam.append("SongId", currentId);
+            updateParam.append("LyricsId", $("#txtLyricsId").val());
+            updateParam.append("Lyrics", $("#txtLyrics").val());
+
+
+            $.ajax({
+                type: 'PATCH',
+                url: '/Lyrics/UpdateLyricsInfo/' + currentId,
+                data: songInfo,
+                processData: false,
+                contentType: false,
+                //dataType: "json",
+                //async: true,
+                //contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data > 0) {
+                        alert("Save.");
+                        opener.search();
+                        m_Popup.Close();
+                    } else {
+                        alert("Error: Please check for data");
+                    }
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+
+    </script>
+}
+<div>
+    <div class="pop-header dp-flex mr-auto">
+        <h6 class="title">@ViewData["Title"]</h6>
+    </div>
+
+    <div class="pop-content">
+        <div class="pop-size optional-pop-padding">
+
+            <div class="space-s"></div>
+
+            <div class="tab-content flex-1 overflow-auto-y p-t-l">
+                <table width="100%" class="tbl-basic">
+                    <colgroup>
+                        <col width="20%" />
+                        <col />
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th>Lyrics</th>
+                            <td>
+                                <input id="txtLyricsId" type="hidden" class="fm-def" readonly />
+                                <textarea id="txtLyrics" type="text" class="fm-def" style="width:500px; height:600px" m_required="Lyrics">
+                                </textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="pop-footer">
+            <div class="dp-flex">
+                <div class="ml-auto">
+                    <button id="btnAdd" class="btn page-btn btn-basic" style="display:none;" onclick="insertItem();">Add</button>
+                    <button id="btnUpdate" class="btn page-btn btn-basic" style="display:none;" onclick="updateItem();">Update</button>
+                    <button id="btnDelete" class="btn page-btn btn-basic" style="display:none;" onclick="deleteItem();">Delete</button>
+                    <button class="btn page-btn btn-basic" onclick="m_Popup.Close();">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

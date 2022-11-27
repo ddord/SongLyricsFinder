@@ -21,11 +21,6 @@ namespace SongLyricsFinderAPI.Controllers
             _mapper = mapper;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
         [HttpGet]
         public async Task<ActionResult<LyricsInfo>> GetLyricsInfoAsync()
         {
@@ -34,11 +29,11 @@ namespace SongLyricsFinderAPI.Controllers
             return Ok(result);
         }
 
-        [Route("Song/GetSongInfo/{songId}")]
+        [Route("Lyrics/GetLyricsInfo/{songId}")]
         [HttpGet]
-        public async Task<ActionResult<LyricsInfo>> GetLyricsInfoAsync(int lyricsId)
+        public async Task<ActionResult<LyricsInfo>> GetLyricsInfoAsync(int songId)
         {
-            var lyricsInfo = await _lyricsRepository.GetLyricsInfoAsync(lyricsId);
+            var lyricsInfo = await _lyricsRepository.GetLyricsInfo2Async(songId);
             var result = _mapper.Map<LyricsInfo>(lyricsInfo);
             return Ok(result);
         }
@@ -50,15 +45,28 @@ namespace SongLyricsFinderAPI.Controllers
 
             try
             {
-                var finalLyricsInfo = _mapper.Map<LyricsInfo>(lyricsInfo);
-                await _lyricsRepository.CreateLyricsInfoAsync(finalLyricsInfo);
-                if (!await _lyricsRepository.SaveAsync())
+                LyricsInfo oldLyricsInfo = await _lyricsRepository.GetLyricsInfo2Async(lyricsInfo.SongId);
+
+                if (oldLyricsInfo != null)
                 {
                     return StatusCode(500, false);
                 }
                 else
                 {
-                    return Ok();
+                    var finalLyricsInfo = _mapper.Map<LyricsInfo>(lyricsInfo);
+                    finalLyricsInfo.CreateUser = "testUser1";
+                    finalLyricsInfo.CreateDate = DateTime.Now;
+                    finalLyricsInfo.UpdateUser = "testUser1";
+                    finalLyricsInfo.UpdateDate = DateTime.Now;
+                    await _lyricsRepository.CreateLyricsInfoAsync(finalLyricsInfo);
+                    if (!await _lyricsRepository.SaveAsync())
+                    {
+                        return StatusCode(500, false);
+                    }
+                    else
+                    {
+                        return Ok(true);
+                    }
                 }
             }
             catch (Exception ex)
@@ -67,8 +75,8 @@ namespace SongLyricsFinderAPI.Controllers
             }
         }
 
-        [HttpPut]
-        public async Task<ActionResult> UpdateLyricsInfoAsync([FromBody] LyricsInfoDto lyricsInfo)
+        [HttpPut("Lyrics/UpdateLyricsInfo/{lyricsId}")]
+        public async Task<ActionResult> UpdateLyricsInfoAsync(int lyricsId, [FromForm] LyricsInfoDto lyricsInfo)
         {
             if (lyricsInfo == null) return BadRequest();
 
@@ -78,6 +86,8 @@ namespace SongLyricsFinderAPI.Controllers
 
                 if (oldLyricsInfo == null) return NotFound();
 
+                lyricsInfo.UpdateUser = "testUser1";
+                lyricsInfo.UpdateDate = DateTime.Now;
                 _mapper.Map(lyricsInfo, oldLyricsInfo);
 
                 if (!await _lyricsRepository.SaveAsync())
@@ -86,7 +96,7 @@ namespace SongLyricsFinderAPI.Controllers
                 }
                 else
                 {
-                    return Ok();
+                    return Ok(true);
                 }
             }
             catch (Exception ex)
@@ -115,7 +125,7 @@ namespace SongLyricsFinderAPI.Controllers
                 }
                 else
                 {
-                    return Ok();
+                    return Ok(true);
                 }
             }
             catch (Exception ex)
@@ -125,7 +135,7 @@ namespace SongLyricsFinderAPI.Controllers
         }
 
         [HttpPatch]
-        public async Task<ActionResult> PartiallyUpdateSongInfoAsync([FromBody] LyricsInfoDto lyricsInfo)
+        public async Task<ActionResult> PartiallyUpdateLyricsInfoAsync([FromBody] LyricsInfoDto lyricsInfo)
         {
             if (lyricsInfo == null) return BadRequest();
 
@@ -134,7 +144,9 @@ namespace SongLyricsFinderAPI.Controllers
                 LyricsInfo oldLyricsInfo = await _lyricsRepository.GetLyricsInfoAsync(lyricsInfo.LyricsId);
 
                 if (oldLyricsInfo == null) return NotFound();
-
+                
+                lyricsInfo.UpdateUser = "testUser1";
+                lyricsInfo.UpdateDate = DateTime.Now;
                 _mapper.Map(lyricsInfo, oldLyricsInfo);
 
                 if (!await _lyricsRepository.SaveAsync())
@@ -143,7 +155,7 @@ namespace SongLyricsFinderAPI.Controllers
                 }
                 else
                 {
-                    return Ok();
+                    return Ok(true);
                 }
             }
             catch (Exception ex)

@@ -28,35 +28,19 @@ namespace SongLyricsFinderAPI.Controllers
 
         public IActionResult Index()
         {
-            CloudHelper.GetRDSConnectionString();
             return View();
         }
 
-        public IActionResult Login()
+        public IActionResult ItemModification([FromQuery] string status, [FromQuery] string opt)
         {
+            ViewBag.Status = status;
+            ViewBag.CurrentId = opt;
             return View();
         }
 
-        public IActionResult Logout()
+        public IActionResult LyricsItemModification([FromQuery] string opt)
         {
-            HttpContext.SignOutAsync();
-            return Redirect("/Home/Login");
-        }
-
-        public IActionResult Registration()
-        {
-            return View();
-        }
-
-        public IActionResult MovieItemRegistration([FromQuery] string title)
-        {
-            ViewBag.CurrentId = title;
-            return View();
-        }
-
-        public IActionResult MovieItemModification([FromQuery] string title)
-        {
-            ViewBag.CurrentId = title;
+            ViewBag.CurrentId = opt;
             return View();
         }
 

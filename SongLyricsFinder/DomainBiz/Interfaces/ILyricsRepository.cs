@@ -10,6 +10,7 @@ namespace DomainBiz.Interfaces
     {
         Task<IEnumerable<LyricsInfo>> GetLyricsInfoAsync();
         Task<LyricsInfo> GetLyricsInfoAsync(int lyricsId);
+        Task<LyricsInfo> GetLyricsInfo2Async(int songId);
         Task<bool> LyricsInfoExistsAsync(int lyricsId);
         Task CreateLyricsInfoAsync(LyricsInfo lyricsInfo);
         void DeleteLyricsInfoAsync(LyricsInfo lyricsInfo);

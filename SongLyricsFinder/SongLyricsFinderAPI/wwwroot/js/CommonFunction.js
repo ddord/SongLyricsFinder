@@ -163,12 +163,12 @@ var m_Popup = {
 }
 
 var m_Ajax = {
-    Call: function (url, param, callback, errorCallback, isAsync) {
+    Call: function (url, param, callback, type, errorCallback, isAsync) {
         param = param || {};
         isAsync = (isAsync == null ? true : isAsync);
 
         $.ajax({
-            type: "POST",
+            type: type,
             url: url,
             data: param,
             dataType: "json",

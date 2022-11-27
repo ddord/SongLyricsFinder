@@ -26,10 +26,19 @@ namespace SongLyricsFinderAPI.Controllers
             return View();
         }
 
+        [Route("Song/GetSongInfoAll")]
         [HttpGet]
-        public async Task<ActionResult<SongInfo>> GetSongInfoAsync()
+        public async Task<ActionResult<SongInfo>> GetSongInfoAllAsync()
         {
             var songInfo = await _songRepository.GetSongInfoAsync();
+            var result = _mapper.Map<IEnumerable<SongInfo>>(songInfo);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<SongInfo>> GetSongInfoAsync(string opt, string search)
+        {
+            var songInfo = await _songRepository.GetSongInfoAsync(opt, search);
             var result = _mapper.Map<IEnumerable<SongInfo>>(songInfo);
             return Ok(result);
         }
@@ -51,6 +60,9 @@ namespace SongLyricsFinderAPI.Controllers
             try
             {
                 var finalSongInfo = _mapper.Map<SongInfo>(songInfo);
+                finalSongInfo.CreateUser = songInfo.UpdateUser;
+                finalSongInfo.CreateDate = DateTime.Now;
+                finalSongInfo.UpdateDate = DateTime.Now;
                 await _songRepository.CreateSongInfoAsync(finalSongInfo);
                 if (!await _songRepository.SaveAsync())
                 {
@@ -58,7 +70,7 @@ namespace SongLyricsFinderAPI.Controllers
                 }
                 else
                 {
-                    return Ok();
+                    return Ok(true);
                 }
             }
             catch (Exception ex)
@@ -67,8 +79,8 @@ namespace SongLyricsFinderAPI.Controllers
             }
         }
 
-        [HttpPut]
-        public async Task<ActionResult> UpdateSongInfoAsync([FromBody] SongInfoDto songInfo)
+        [HttpPut("Song/UpdateSongInfo/{songId}")]
+        public async Task<ActionResult> UpdateSongInfoAsync(int songId, [FromForm] SongInfoDto songInfo)
         {
             if (songInfo == null) return BadRequest();
 
@@ -77,7 +89,8 @@ namespace SongLyricsFinderAPI.Controllers
                 SongInfo oldSongInfo = await _songRepository.GetSongInfoAsync(songInfo.SongId);
 
                 if (oldSongInfo == null) return NotFound();
-
+                songInfo.CreateUser = songInfo.UpdateUser;
+                songInfo.UpdateDate = DateTime.Now;
                 _mapper.Map(songInfo, oldSongInfo);
 
                 if (!await _songRepository.SaveAsync())
@@ -86,7 +99,7 @@ namespace SongLyricsFinderAPI.Controllers
                 }
                 else
                 {
-                    return Ok();
+                    return Ok(true);
                 }
             }
             catch (Exception ex)
@@ -95,8 +108,7 @@ namespace SongLyricsFinderAPI.Controllers
             }
         }
 
-        [Route("Song/DeleteSongInfo/{songId}")]
-        [HttpDelete]
+        [HttpDelete("Song/DeleteSongInfo/{songId}")]
         public async Task<ActionResult> DeleteSongInfoAsync(int songId)
         {
             if (!await _songRepository.SongInfoExistsAsync(songId)) return NotFound();
@@ -115,7 +127,7 @@ namespace SongLyricsFinderAPI.Controllers
                 }
                 else
                 {
-                    return Ok();
+                    return Ok(true);
                 }
             }
             catch (Exception ex)
@@ -143,7 +155,7 @@ namespace SongLyricsFinderAPI.Controllers
                 }
                 else
                 {
-                    return Ok();
+                    return Ok(true);
                 }
             }
             catch (Exception ex)

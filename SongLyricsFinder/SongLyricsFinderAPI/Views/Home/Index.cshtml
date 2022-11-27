@@ -1,131 +1,72 @@
 ﻿@{
     Layout = "_Layout";
-    ViewData["Title"] = "Movie List";
+    ViewData["Title"] = "List";
 }
 @section Scripts {
-<script>
-        var CurrentRating;
-        var CurrentGenre;
-        var CurrentTitle;
+    <script>
+        var currentOpt = '';
+        var currentSearch = '';
 
         function fnDocumentReadyCommon() {
-            search();
+            currentOpt = '';
+            currentSearch = '';
         }
 
         function search() {
-            CurrentRating = $('#selectRating').val();
-            CurrentGenre = $('#selectGenre').val();
-            CurrentTitle = $('#txtTitle').val();
+            currentOpt = $('#selectOpt').val();
+            currentSearch = $('#txtSearch').val();
 
-            selectMovieList(1, true);
+            selectList();
         }
 
-        function selectMovieList() {
-            var param = {
-                rating: CurrentRating,
-                genre: CurrentGenre,
-                title: CurrentTitle
+        function selectList() {
+            var url = '';
+            if (currentOpt == '1' && currentSearch.trim() == '') {
+                url = '/Song/GetSongInfoAll';
+            } else {
+                url = '/Song/GetSongInfo' + '?opt=' + currentOpt + '&search=' + currentSearch;
+                if (currentSearch.trim() == '') {
+                    alert('Enter your search');
+                    return;
+                }
             }
 
-            m_Ajax.Call('@Url.Action("SelectMovieList")', param, function (data) {
-                if (data) {
-                    var tbodyHtml = "";
+            m_Ajax.Call(url, '', function (data) {
+                if (data.length > 0) {
+                    var searchHtml = "";
                     $(data).each(function (i) {
-                        tbodyHtml += '<tr>';
-                        tbodyHtml += '  <td>';
-                        tbodyHtml += '      <a onclick="callEdit(this);">' + (data[i].title ? data[i].title : "") + '</a>';
-                        tbodyHtml += '  </td>';
-                        tbodyHtml += '  <td class="align-center">' + (data[i].genre ? data[i].genre : "") + '</td>';
-                        tbodyHtml += '  <td class="align-center">' + (data[i].director ? data[i].director : "") + '</td>';
-                        tbodyHtml += '  <td class="align-center">' + (data[i].releaseTime ? data[i].releaseTime : "") + '</td>';
-                        tbodyHtml += '  <td class="align-center">' + (data[i].rating ? data[i].rating : "") + '</td>';
-                        tbodyHtml += '  <td class="align-center">' + (data[i].updateUser ? data[i].updateUser : "") + '</td>';
-                        tbodyHtml += '</tr>';
+                        searchHtml += '<div class="sub-content-padding text-align-center" style="border: solid 1px darkgray; border-radius:30px;">';
+                        searchHtml += '    <div>';
+                        searchHtml += '        <div>';
+                        searchHtml += '            <div>';
+                        searchHtml += '                <span><img src="/img/record.png" style="width:200px; height:200px;" /></span>';
+                        searchHtml += '            </div>';
+                        searchHtml += '            <div class="space-m"></div>';
+                        searchHtml += '            <div>';
+                        searchHtml += '                <h3 class="ft-blue b space-m">' + data[i].songname + '</h3>';
+                        searchHtml += '                <input type="hidden" value="' + + data[i].songId + '">';
+                        searchHtml += '                <span class="block text-align-center space-m">' + data[i].artist + '</span>';
+                        searchHtml += '                <button class="btn sub-btn btn-basic-outline space-m" onclick="callEdit(this)">Song View</button>';
+                        searchHtml += '                <button class="btn sub-btn btn-basic-outline space-m" onclick="callLyrics(' + data[i].songId + ')">Lyric View</button>';
+                        searchHtml += '            </div>';
+                        searchHtml += '        </div>';
+                        searchHtml += '    </div>';
+                        searchHtml += '</div>';
                     });
-                    $('#movieList').html(tbodyHtml);
+                    $('#searchList').html(searchHtml);
 
                 } else {
-                    $('#movieList').html('<td colspan="6">The item does not exist.</td>');
+                    $('#searchList').html('');
+                    alert('No search results');
                 }
-            });
+            }, "GET");
         }
-
-        function callAdd() {
-            m_Popup.Open("/Home/MovieItemRegistration", "Movie Content", 1000, 790);
-        }
-
-        function callEdit(elem) {
-            var title = $(elem).text();
-            m_Popup.Open("/Home/MovieItemModification?title=" + title, "Movie Content", 1000, 790);
-        }
-</script>
-}
-<div class="sub-content-padding">
+    </script>
+    }
+    <div class="sub-content-padding">
     <div class="subpage-body">
         <div class="space-s"></div>
-
-        <div class="sub-content-grid overflow-auto">
-            <div class="sub-content-padding text-align-center" style="border: solid 1px darkgray; border-radius:30px;">
-                <div>
-                    <div>
-                        <div>
-                            <span><img src="~/img/record.png" style="width:200px; height:200px;" /></span>
-                        </div>
-                        <div class="space-m"></div>
-                        <div>
-                            <h3 class="ft-blue b space-m">THE Hills</h3>
-                            <span class="block text-align-center space-m">The Weeknd</span>
-                            <button class="btn sub-btn btn-basic-outline space-m">get</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="sub-content-padding text-align-center" style="border: solid 1px darkgray; border-radius:30px;">
-                <div>
-                    <div>
-                        <div>
-                            <span><img src="~/img/record.png" style="width:200px; height:200px;" /></span>
-                        </div>
-                        <div class="space-m"></div>
-                        <div>
-                            <h3 class="ft-blue b space-m">THE Hills</h3>
-                            <span class="block text-align-center space-m">The Weeknd</span>
-                            <button class="btn sub-btn btn-basic-outline space-m">get</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="sub-content-padding text-align-center" style="border: solid 1px darkgray; border-radius:30px;">
-                <div>
-                    <div>
-                        <div>
-                            <span><img src="~/img/record.png" style="width:200px; height:200px;" /></span>
-                        </div>
-                        <div class="space-m"></div>
-                        <div>
-                            <h3 class="ft-blue b space-m">THE Hills</h3>
-                            <span class="block text-align-center space-m">The Weeknd</span>
-                            <button class="btn sub-btn btn-basic-outline space-m">get</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="sub-content-padding text-align-center" style="border: solid 1px darkgray; border-radius:30px;">
-                <div>
-                    <div>
-                        <div>
-                            <span><img src="~/img/record.png" style="width:200px; height:200px;" /></span>
-                        </div>
-                        <div class="space-m"></div>
-                        <div>
-                            <h3 class="ft-blue b space-m">THE Hills</h3>
-                            <span class="block text-align-center space-m">The Weeknd</span>
-                            <button class="btn sub-btn btn-basic-outline space-m">get</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+        <div id="searchList" class="sub-content-grid overflow-auto">
         </div>
 
         <div class="space-m"></div>

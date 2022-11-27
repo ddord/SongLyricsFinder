@@ -21,6 +21,33 @@ namespace DataAccess.EFCore.Repositories
             return await result.ToListAsync();
         }
 
+        public async Task<IEnumerable<SongInfo>> GetSongInfoAsync(string opt, string search)
+        {
+            if (opt.Trim().ToUpper() == "0")
+            {
+                var result = from songInfo in _context.SongInfos
+                              let l1 = from c in _context.LyricsInfos
+                                       where EF.Functions.Like(c.Lyrics, "%" + search + "%")
+                                       select c.SongId
+                              where l1.Contains(songInfo.SongId)
+                              select songInfo;
+
+                return await result.ToListAsync();
+            }
+            else if (opt.Trim().ToUpper() == "1")
+            {
+                var result = from c in _context.SongInfos
+                             where EF.Functions.Like(c.Songname, "%" + search + "%")
+                             select c;
+
+                return await result.ToListAsync();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public async Task<SongInfo> GetSongInfoAsync(int songId)
         {
             IQueryable<SongInfo> result;
